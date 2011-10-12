@@ -152,7 +152,7 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
     content => template("continuum/security.properties.erb"),
     notify  => Service[$service],
   } ->
-  file { "$home/apps/continuum/WEB-INF/classes/META-INF/plexus/application.xml":
+  file { "$installdir/apps/continuum/WEB-INF/classes/META-INF/plexus/application.xml":
     content =>  template("continuum/application.xml.erb"),
     notify  => Service[$service],
   } ->
