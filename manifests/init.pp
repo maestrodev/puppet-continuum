@@ -46,7 +46,8 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
     username => "sa",
     password => "",
   },
-  $jdbc_driver_url = "") {
+  $jdbc_driver_url = "",
+  $shared_secret_password = "") {
 
   # wget from https://github.com/maestrodev/puppet-wget
   include wget
@@ -145,6 +146,10 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
   file { "$installdir/apps/continuum/WEB-INF/classes/META-INF/plexus/application.xml":
     content =>  template("continuum/application.xml.erb"),
     notify  => Service[$service],
+  } ->
+  file { "$home/conf/continuum.xml":
+    content => template("continuum/continuum.xml.erb"),
+    replace => no,
   } ->
   file { "/etc/profile.d/continuum.sh":
     owner   => "root",
