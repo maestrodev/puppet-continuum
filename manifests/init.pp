@@ -58,15 +58,19 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
   $installdir = "$installroot/apache-continuum-$version"
   $archive = "/usr/local/src/apache-continuum-${version}-bin.tar.gz"
 
-  user { "$user":
-    ensure     => present,
-    home       => "$home",
-    managehome => false,
-    system     => true,
+  if !defined(User[$user]) {
+    user { "$user":
+      ensure     => present,
+      home       => "$home",
+      managehome => false,
+      system     => true,
+    }
   }
-  group { "$group":
-    ensure  => present,
-    require => User["$user"],
+  if !defined(Group[$group]) {
+    group { "$group":
+      ensure  => present,
+      require => User["$user"],
+    }
   }
   if "x${repo['url']}x" != "xx" {
     wget::authfetch { "continuum_download":
