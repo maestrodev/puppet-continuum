@@ -287,24 +287,26 @@
   <New id="continuum" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/continuum</Arg>
     <Arg>
-      <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= continuum_jdbc['driver'] %></Set>
-        <Set name="url"><%= continuum_jdbc['url'] %></Set>
-        <Set name="username"><%= continuum_jdbc['username'] %></Set>
+      <New class="<%= continuum_jdbc['dataSource'] %>">
+        <Set name="DatabaseName"><%= continuum_jdbc['databaseName'] %></Set>
+        <Set name="user"><%= continuum_jdbc['username'] %></Set>
         <Set name="password"><%= continuum_jdbc['password'] %></Set>
+<% if continuum_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" %>
+        <Set name="createDatabase">true</Set>
+<% end %>
       </New>
     </Arg>
   </New>
 
-<% if continuum_jdbc['shutdown_url'] and !continuum_jdbc['shutdown_url'].empty? %>
+<% if continuum_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" %>
   <New id="continuumShutdown" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/continuumShutdown</Arg>
     <Arg>
-      <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= continuum_jdbc['driver'] %></Set>
-        <Set name="url"><%= continuum_jdbc['shutdown_url'] %></Set>
-        <Set name="username"><%= continuum_jdbc['username'] %></Set>
+      <New class="<%= continuum_jdbc['dataSource'] %>">
+        <Set name="DatabaseName"><%= continuum_jdbc['databaseName'] %></Set>
+        <Set name="user"><%= continuum_jdbc['username'] %></Set>
         <Set name="password"><%= continuum_jdbc['password'] %></Set>
+        <Set name="shutdownDatabase">shutdown</Set>
       </New>
     </Arg>
   </New>
@@ -315,24 +317,26 @@
   <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/users</Arg>
     <Arg>
-      <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= users_jdbc['driver'] %></Set>
-        <Set name="url"><%= users_jdbc['url'] %></Set>
-        <Set name="username"><%= users_jdbc['username'] %></Set>
+      <New class="<%= users_jdbc['dataSource'] %>">
+        <Set name="DatabaseName"><%= users_jdbc['databaseName'] %></Set>
+        <Set name="user"><%= users_jdbc['username'] %></Set>
         <Set name="password"><%= users_jdbc['password'] %></Set>
+<% if users_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" %>
+        <Set name="createDatabase">true</Set>
+<% end %>
       </New>
     </Arg>
   </New>
 
-<% if users_jdbc['shutdown_url'] and !users_jdbc['shutdown_url'].empty? %>
+<% if users_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" %>
   <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
-      <New class="org.apache.commons.dbcp.BasicDataSource">                     
-        <Set name="driverClassName"><%= users_jdbc['driver'] %></Set>
-        <Set name="url"><%= users_jdbc['shutdown_url'] %></Set>
-        <Set name="username"><%= users_jdbc['username'] %></Set>
+      <New class="<%= users_jdbc['dataSource'] %>">
+        <Set name="DatabaseName"><%= users_jdbc['databaseName'] %></Set>
+        <Set name="user"><%= users_jdbc['username'] %></Set>
         <Set name="password"><%= users_jdbc['password'] %></Set>
+        <Set name="shutdownDatabase">shutdown</Set>
       </New>
     </Arg>
   </New>

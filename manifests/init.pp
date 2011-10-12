@@ -35,14 +35,14 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
     #admin_user => "root",
   },
   $continuum_jdbc = {
-    url => "jdbc:derby:/var/local/continuum/data/databases/continuum;create=true",
-    driver => "org.apache.derby.jdbc.EmbeddedDriver",
+    databaseName => "/var/local/continuum/data/databases/continuum",
+    dataSource => "org.apache.derby.jdbc.EmbeddedDataSource",
     username => "sa",
     password => "",
   },
   $users_jdbc = {
-    url => "jdbc:derby:/var/local/continuum/data/databases/users;create=true",
-    driver => "org.apache.derby.jdbc.EmbeddedDriver",
+    databaseName => "/var/local/continuum/data/databases/users",
+    dataSource => "org.apache.derby.jdbc.EmbeddedDataSource",
     username => "sa",
     password => "",
   },
@@ -56,17 +56,6 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
 
   $installdir = "$installroot/apache-continuum-$version"
   $archive = "/usr/local/src/apache-continuum-${version}-bin.tar.gz"
-
-  # Derby specifics
-  if $continuum_jdbc['driver'] == "org.apache.derby.jdbc.EmbeddedDriver" {
-    $continuum_u = regsubst($continuum_jdbc['url'],";.*$", "")
-    $continuum_jdbc['shutdown_url'] = "$continuum_u;shutdown=true"
-  }
-
-  if $users_jdbc['driver'] == "org.apache.derby.jdbc.EmbeddedDriver" {
-    $users_u = regsubst($users_jdbc['url'],";.*$", "")
-    $users_jdbc['shutdown_url'] = "$users_u;shutdown=true"
-  }
 
   user { "$user":
     ensure     => present,
