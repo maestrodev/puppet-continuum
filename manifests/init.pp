@@ -110,9 +110,10 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
       require => Exec["continuum_untar"],
     } ->
     exec { "jdbc_driver_append":
-      command => "sed -i 's#^wrapper.java.classpath.15=.*$#wrapper.java.classpath.15=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
-      unless => "grep 'wrapper.java.classpath.15=%REPO_DIR%/$filename' $installdir/conf/wrapper.conf",
+      command => "sed -i 's#^wrapper.java.classpath.16=.*$#wrapper.java.classpath.16=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
+      unless => "grep 'wrapper.java.classpath.16=%REPO_DIR%/$filename' $installdir/conf/wrapper.conf",
       notify => Service[$service],
+      require => File["$home/conf/wrapper.conf"],
     }
   }
   file { "$home":
@@ -129,7 +130,7 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
     ensure => directory,
     require => Exec["continuum_untar"],
   } ->
-  file { "$home/conf/wrapper.conf": ensure => link, target => "$installdir/conf/wrapper.conf", } ->
+  file { "$home/conf/wrapper.conf": ensure => present, source => "$installdir/conf/wrapper.conf", } ->
   file { "$home/conf/shared.xml": ensure  => present, source => "$installdir/conf/shared.xml", } ->
   file { "$home/conf/jetty.xml":
     ensure  => present,
