@@ -109,12 +109,12 @@ class continuum($version, $user = "continuum", $group = "continuum", $service =
   }
   if $jdbc_driver_url != "" {
     $filename = regsubst("$jdbc_driver_url","^.*/", "")
-    wget::fetch { "jdbc_driver_download":
+    wget::fetch { "continuum_jdbc_driver_download":
       source => "$jdbc_driver_url",
       destination => "$installdir/lib/$filename",
       require => Exec["continuum_untar"],
     } ->
-    exec { "jdbc_driver_append":
+    exec { "continuum_jdbc_driver_append":
       command => "sed -i 's#^wrapper.java.classpath.16=.*$#wrapper.java.classpath.16=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
       unless => "grep 'wrapper.java.classpath.16=%REPO_DIR%/$filename' $installdir/conf/wrapper.conf",
       notify => Service[$service],
