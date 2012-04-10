@@ -84,11 +84,11 @@ class continuum::buildagent(
   if $::architecture == "x86_64" {
     file { "$installdir/bin/wrapper-linux-x86-32":
       ensure => absent,
-      require => Exec["continuum_untar"],
+      require => Exec["continuum_buildagent_untar"],
     }
     file { "$installdir/lib/libwrapper-linux-x86-32.so":
       ensure => absent,
-      require => Exec["continuum_untar"],
+      require => Exec["continuum_buildagent_untar"],
     }
   }
 
