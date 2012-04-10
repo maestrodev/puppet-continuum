@@ -50,7 +50,6 @@ describe 'continuum::master' do
 
     it { should contain_file('/var/local/continuum/conf/wrapper.conf').with_source("/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/wrapper.conf") }
     it { should contain_file('/var/local/continuum/conf/shared.xml').with_source("/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/shared.xml") }
-    it { should contain_file('/var/local/continuum/data/databases').with_owner("continuum") }
   end
 
   context "when port changes" do
