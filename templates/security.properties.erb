@@ -1,18 +1,18 @@
-application.url = <%= application_url %>
-<% if !mail_from.empty? %>
+application.url = <%= application_url_real %>
+<% unless mail_from.empty? %>
 email.from.address = <%=mail_from['address']%>
 email.from.name = <%=mail_from['name']%>
-<% end %>
+<% end -%>
 
 # LDAP or DB user authentication
-<% using_ldap = !ldap.empty? %>
+<% using_ldap = !ldap.empty? -%>
 user.manager.impl=<%=using_ldap ? "ldap" : "jdo"%>
 
 security.policy.allowed.login.attempt=10000
 security.policy.password.expiration.enabled=false
 <%= "#" if using_ldap %>security.policy.unlockable.accounts=admin
+<% if using_ldap -%>
 
-<% if using_ldap %>
 # required LDAP server config
 ldap.config.hostname=<%=ldap['hostname']%>
 ldap.config.ssl=<%=ldap['ssl']%>
@@ -38,4 +38,4 @@ redback.default.admin=<%=ldap['admin_user']%>
 
 # LDAP anonymous bind config
 ldap.bind.authenticator.enabled=true
-<% end %>
+<% end -%>

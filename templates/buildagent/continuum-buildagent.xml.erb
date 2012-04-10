@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<continuum-buildagent-configuration>
+  <continuumServerUrl>http://<%=master_host%>:<%=master_port%><%=master_path%></continuumServerUrl>
+  <buildOutputDirectory><%= installbase %>/data/build-output-directory</buildOutputDirectory>
+  <workingDirectory><%= workingdir_real %></workingDirectory>
+<% if @shared_secret_password_real -%>
+  <sharedSecretPassword><%=shared_secret_password_real%></sharedSecretPassword>
+<% end -%>
+</continuum-buildagent-configuration>

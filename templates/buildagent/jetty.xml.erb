@@ -34,7 +34,7 @@
     <!-- Server Thread Pool                                          -->
     <!-- =========================================================== -->
     <Set name="ThreadPool">
-      <!-- Default bounded blocking threadpool
+      <!-- Default bounded blocking threadpool 
       -->
       <New class="org.mortbay.thread.BoundedThreadPool">
         <Set name="minThreads">10</Set>
@@ -42,13 +42,15 @@
         <Set name="lowThreads">25</Set>
       </New>
 
-      <!-- Optional Java 5 bounded threadpool with job queue
+      <!-- Optional Java 5 bounded threadpool with job queue 
       <New class="org.mortbay.thread.concurrent.ThreadPool">
         <Set name="corePoolSize">250</Set>
         <Set name="maximumPoolSize">250</Set>
       </New>
       -->
     </Set>
+
+
 
     <!-- =========================================================== -->
     <!-- Set connectors                                              -->
@@ -58,11 +60,12 @@
 
     <!-- Use this connector for many frequently idle connections
          and for threadless continuations.
-    -->
+    -->    
+    <!-- START SNIPPET: jetty_port -->    
     <Call name="addConnector">
       <Arg>
           <New class="org.mortbay.jetty.nio.SelectChannelConnector">
-            <Set name="host"><SystemProperty name="jetty.host"/></Set>
+            <Set name="host"><SystemProperty name="jetty.host" /></Set>
             <Set name="port"><SystemProperty name="jetty.port" default="<%= port %>"/></Set>
             <Set name="maxIdleTime">30000</Set>
             <Set name="Acceptors">2</Set>
@@ -73,8 +76,9 @@
           </New>
       </Arg>
     </Call>
+    <!-- END SNIPPET: jetty_port -->
 
-    <!-- Use this connector if NIO is not available.
+    <!-- Use this connector if NIO is not available. 
     <Call name="addConnector">
       <Arg>
           <New class="org.mortbay.jetty.bio.SocketConnector">
@@ -91,7 +95,7 @@
     <!-- see jetty-ssl.xml to add an ssl connector. use                  -->
     <!-- java -jar start.jar etc/jetty.xml etc/jetty-ssl.xml             -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
+    
     <!-- =========================================================== -->
     <!-- Set up global session ID manager                            -->
     <!-- =========================================================== -->
@@ -104,7 +108,7 @@
     -->
 
     <!-- =========================================================== -->
-    <!-- Set handler Collection Structure                            -->
+    <!-- Set handler Collection Structure                            --> 
     <!-- =========================================================== -->
     <Set name="handler">
       <New id="Handlers" class="org.mortbay.jetty.handler.HandlerCollection">
@@ -123,7 +127,7 @@
         </Set>
       </New>
     </Set>
-
+    
     <!-- =========================================================== -->
     <!-- Configure the context deployer                              -->
     <!-- A context deployer will deploy contexts described in        -->
@@ -163,9 +167,10 @@
         <New class="org.mortbay.jetty.deployer.WebAppDeployer">
           <Set name="contexts"><Ref id="Contexts"/></Set>
           <Set name="webAppDir"><SystemProperty name="jetty.home" default="."/>/apps</Set>
-	        <Set name="parentLoaderPriority">false</Set>
-	        <Set name="extract">true</Set>
-	        <Set name="allowDuplicates">false</Set>
+	  <Set name="parentLoaderPriority">false</Set>
+	  <Set name="extract">true</Set>
+	  <Set name="allowDuplicates">false</Set>
+          <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="."/>/conf/webdefault.xml</Set>
         </New>
       </Arg>
     </Call>
@@ -200,7 +205,7 @@
     <Set name="gracefulShutdown">1000</Set>
 
 
-
+ 
  <!-- =========================================================== -->
   <!-- JNDI java:comp/env                                          -->
   <!-- To use JNDI with Jetty, you will need to tell your          -->
@@ -267,78 +272,4 @@
     <Arg type="boolean">False</Arg>
   </Call>
 
-  <!-- CONTINUUM CONFIG -->
-
-  <New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>mail/Session</Arg>
-    <Arg>
-      <New class="org.mortbay.naming.factories.MailSessionReference">
-        <Set name="user"></Set>
-        <Set name="password"></Set>
-        <Set name="properties">
-          <New class="java.util.Properties">
-            <Put name="mail.smtp.host">localhost</Put>
-          </New>
-        </Set>
-      </New>
-    </Arg>
-  </New>
-
-  <New id="continuum" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/continuum</Arg>
-    <Arg>
-      <New class="<%= continuum_jdbc['dataSource'] %>">
-        <Set name="DatabaseName"><%= continuum_jdbc['databaseName'] %></Set>
-        <Set name="user"><%= continuum_jdbc['username'] %></Set>
-        <Set name="password"><%= continuum_jdbc['password'] %></Set>
-<% if continuum_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" -%>
-        <Set name="createDatabase">create</Set>
-<% end -%>
-      </New>
-    </Arg>
-  </New>
-<% if continuum_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" -%>
-
-  <New id="continuumShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/continuumShutdown</Arg>
-    <Arg>
-      <New class="<%= continuum_jdbc['dataSource'] %>">
-        <Set name="DatabaseName"><%= continuum_jdbc['databaseName'] %></Set>
-        <Set name="user"><%= continuum_jdbc['username'] %></Set>
-        <Set name="password"><%= continuum_jdbc['password'] %></Set>
-        <Set name="shutdownDatabase">shutdown</Set>
-      </New>
-    </Arg>
-  </New>
-<% end -%>
-
-  <!-- Users / Security Database -->
-
-  <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/users</Arg>
-    <Arg>
-      <New class="<%= users_jdbc['dataSource'] %>">
-        <Set name="DatabaseName"><%= users_jdbc['databaseName'] %></Set>
-        <Set name="user"><%= users_jdbc['username'] %></Set>
-        <Set name="password"><%= users_jdbc['password'] %></Set>
-<% if users_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" -%>
-        <Set name="createDatabase">create</Set>
-<% end -%>
-      </New>
-    </Arg>
-  </New>
-<% if users_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" -%>
-
-  <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/usersShutdown</Arg>
-    <Arg>
-      <New class="<%= users_jdbc['dataSource'] %>">
-        <Set name="DatabaseName"><%= users_jdbc['databaseName'] %></Set>
-        <Set name="user"><%= users_jdbc['username'] %></Set>
-        <Set name="password"><%= users_jdbc['password'] %></Set>
-        <Set name="shutdownDatabase">shutdown</Set>
-      </New>
-    </Arg>
-  </New>
-<% end -%>
 </Configure>

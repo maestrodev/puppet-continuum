@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <continuum-configuration>
-  <baseUrl><%= application_url %></baseUrl>
-  <buildOutputDirectory><%= home %>/data/build-output-directory</buildOutputDirectory>
-  <workingDirectory><%= home %>/data/working-directory</workingDirectory>
-  <releaseOutputDirectory><%= home %>/data/release-output-directory</releaseOutputDirectory>
-<% if has_variable?("shared_secret_password") %>
+  <baseUrl><%= application_url_real %></baseUrl>
+  <buildOutputDirectory><%= installbase %>/data/build-output-directory</buildOutputDirectory>
+  <workingDirectory><%= installbase %>/data/working-directory</workingDirectory>
+  <releaseOutputDirectory><%= installbase %>/data/release-output-directory</releaseOutputDirectory>
+<% if @shared_secret_password -%>
   <distributedBuildEnabled>true</distributedBuildEnabled>
   <sharedSecretPassword><%=shared_secret_password%></sharedSecretPassword>
-<% end %>
+<% end -%>
 </continuum-configuration>

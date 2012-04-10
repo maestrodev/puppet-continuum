@@ -1,9 +1,8 @@
 node default {
-  notify { 'test': }
 }
 
-node /testhost/ {
-}
-
-node 'user.example.com' {
+node buildagent {
+  class { continuum::buildagent:
+    default_vhost => false,
+  }
 }

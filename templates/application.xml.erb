@@ -73,7 +73,7 @@
         </requirement>        
       </requirements>
       <configuration>
-<% if !mail_from.empty? %>
+<% unless mail_from.empty? %>
         <from-mailbox><%= mail_from['address'] %></from-mailbox>
         <from-name><%= mail_from['name'] %></from-name>
 <% else %>

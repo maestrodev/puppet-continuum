@@ -63,7 +63,7 @@
       <Arg>
           <New class="org.mortbay.jetty.nio.SelectChannelConnector">
             <Set name="host"><SystemProperty name="jetty.host"/></Set>
-            <Set name="port"><SystemProperty name="jetty.port" default="<%= port %>"/></Set>
+            <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
             <Set name="maxIdleTime">30000</Set>
             <Set name="Acceptors">2</Set>
             <Set name="statsOn">false</Set>
@@ -287,58 +287,50 @@
   <New id="continuum" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/continuum</Arg>
     <Arg>
-      <New class="<%= continuum_jdbc['dataSource'] %>">
-        <Set name="DatabaseName"><%= continuum_jdbc['databaseName'] %></Set>
-        <Set name="user"><%= continuum_jdbc['username'] %></Set>
-        <Set name="password"><%= continuum_jdbc['password'] %></Set>
-<% if continuum_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" -%>
-        <Set name="createDatabase">create</Set>
-<% end -%>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="DatabaseName">/var/local/continuum/data/databases/continuum</Set>
+        <Set name="user">sa</Set>
+        <Set name="password"></Set>
+        <Set name="createDatabase">true</Set>
       </New>
     </Arg>
   </New>
-<% if continuum_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" -%>
 
   <New id="continuumShutdown" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/continuumShutdown</Arg>
     <Arg>
-      <New class="<%= continuum_jdbc['dataSource'] %>">
-        <Set name="DatabaseName"><%= continuum_jdbc['databaseName'] %></Set>
-        <Set name="user"><%= continuum_jdbc['username'] %></Set>
-        <Set name="password"><%= continuum_jdbc['password'] %></Set>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="DatabaseName">/var/local/continuum/data/databases/continuum</Set>
+        <Set name="user">sa</Set>
+        <Set name="password"></Set>
         <Set name="shutdownDatabase">shutdown</Set>
       </New>
     </Arg>
   </New>
-<% end -%>
 
   <!-- Users / Security Database -->
 
   <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/users</Arg>
     <Arg>
-      <New class="<%= users_jdbc['dataSource'] %>">
-        <Set name="DatabaseName"><%= users_jdbc['databaseName'] %></Set>
-        <Set name="user"><%= users_jdbc['username'] %></Set>
-        <Set name="password"><%= users_jdbc['password'] %></Set>
-<% if users_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" -%>
-        <Set name="createDatabase">create</Set>
-<% end -%>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="DatabaseName">/var/local/continuum/data/databases/users</Set>
+        <Set name="user">sa</Set>
+        <Set name="password"></Set>
+        <Set name="createDatabase">true</Set>
       </New>
     </Arg>
   </New>
-<% if users_jdbc['dataSource'] == "org.apache.derby.jdbc.EmbeddedDataSource" -%>
 
   <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
-      <New class="<%= users_jdbc['dataSource'] %>">
-        <Set name="DatabaseName"><%= users_jdbc['databaseName'] %></Set>
-        <Set name="user"><%= users_jdbc['username'] %></Set>
-        <Set name="password"><%= users_jdbc['password'] %></Set>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="DatabaseName">/var/local/continuum/data/databases/users</Set>
+        <Set name="user">sa</Set>
+        <Set name="password"></Set>
         <Set name="shutdownDatabase">shutdown</Set>
       </New>
     </Arg>
   </New>
-<% end -%>
 </Configure>
