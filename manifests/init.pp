@@ -14,7 +14,7 @@
 
 class continuum($version, $user = "continuum", $group = "continuum", $service =
   "continuum", $installroot = "/usr/local", $home = "/var/local/continuum",
-  $apache_mirror = "http://archive.apache.org/dist/",
+  $apache_mirror = "http://archive.apache.org/dist",
   $repo = {
     #url = "http://repo1.maven.org/maven2",
     #username = "",
