@@ -43,7 +43,6 @@ define continuum::buildagent::vhost(
   } ->
   file { "$installbase/conf":
     ensure => directory,
-    require => Exec["continuum_untar"],
   } ->
   file { "$installbase/conf/wrapper.conf": ensure => present, source => "$continuum::buildagent::installdir/conf/wrapper.conf", } ->
   file { "$installbase/conf/shared.xml": ensure  => present, source => "$continuum::buildagent::installdir/conf/shared.xml", } ->
