@@ -137,7 +137,7 @@ class continuum::master(
       command => "sed -i 's#^wrapper.java.classpath.16=.*$#wrapper.java.classpath.16=%REPO_DIR%/$filename#' $installdir/conf/wrapper.conf",
       unless => "grep 'wrapper.java.classpath.16=%REPO_DIR%/$filename' $installdir/conf/wrapper.conf",
       notify => Service[$service],
-      require => File["$home/conf/wrapper.conf"],
+      require => File["$installdir/conf/wrapper.conf"],
     }
   }
   file { "$installbase":

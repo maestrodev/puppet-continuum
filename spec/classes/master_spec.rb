@@ -164,4 +164,18 @@ describe 'continuum::master' do
                     :source => 'http://archive.apache.org/dist/continuum/binaries/apache-continuum-1.2.3.4.5-bin.tar.gz',
                     :destination => "/usr/local/src/apache-continuum-1.2.3.4.5-bin.tar.gz") }
   end
+
+  context "with postgres JDBC driver" do
+    let(:params) {{
+        :jdbc_driver_url => "http://driver.com/example.jar"
+    }}
+
+    it "should download JDBC driver" do
+      should contain_wget__fetch("continuum_jdbc_driver_download")
+      params = catalogue.resource('wget::fetch', "continuum_jdbc_driver_download").send(:parameters)
+      params[:destination].should eq("/usr/local/apache-continuum-1.4.0/lib/example.jar")
+
+      should contain_exec("continuum_jdbc_driver_append")
+    end
+  end
 end
