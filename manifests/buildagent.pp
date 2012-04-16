@@ -35,6 +35,13 @@ class continuum::buildagent(
   $installdir = "$installroot/apache-continuum-buildagent-$version"
   $archive = "/usr/local/src/apache-continuum-buildagent-${version}-bin.tar.gz"
 
+  if $user_home == undef {
+   $user_home_real = $installbase
+  }
+  else {
+    $user_home_real = $user_home
+  }
+
   if !defined(Group[$group]) {
     group { "$group":
       ensure  => present,
@@ -42,12 +49,6 @@ class continuum::buildagent(
     }
   }
   if !defined(User[$user]) {
-    if $user_home == undef {
-       $user_home_real = $installbase
-    }
-    else {
-        $user_home_real = $user_home
-    }
     user { "$user":
       ensure     => present,
       home       => $user_home_real,
