@@ -1,2 +1,2 @@
-pkg
-.vagrant
+/pkg
+/.vagrant
