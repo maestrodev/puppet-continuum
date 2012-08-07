@@ -94,6 +94,10 @@ class continuum::buildagent(
   }
 
   if $default_vhost {
-    continuum::buildagent::vhost { "continuum-buildagent": }
+    continuum::buildagent::vhost { "continuum-buildagent":
+
+	require => File["$installroot/continuum-buildagent"], 
+
+    }
   }
 }
