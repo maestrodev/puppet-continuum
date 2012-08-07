@@ -6,12 +6,8 @@ define continuum::buildagent::vhost(
   $master_host = "localhost",
   $master_port = "8080",
   $master_path = "/continuum/master-xmlrpc",
-  $shared_secret_password = undef,
+  $shared_secret_password = undef
 ) {
-
-  if $name != "continuum-buildagent" {
-    Class[continuum::buildagent] -> Continuum::Buildagent::Vhost[$name]
-  }
 
   if $workingdir == undef {
     $workingdir_real = "$installbase/data/working-directory"
@@ -44,7 +40,11 @@ define continuum::buildagent::vhost(
   file { "$installbase/conf":
     ensure => directory,
   } ->
-  file { "$installbase/conf/wrapper.conf": ensure => present, source => "$continuum::buildagent::installdir/conf/wrapper.conf", } ->
+  file { "$installbase/conf/wrapper.conf": 
+    ensure => present, 
+    source => "$continuum::buildagent::installdir/conf/wrapper.conf", 
+    require => Exec["continuum_buildagent_untar"]
+  } ->
   file { "$installbase/conf/shared.xml": ensure  => present, source => "$continuum::buildagent::installdir/conf/shared.xml", } ->
   file { "$installbase/conf/jetty.xml":
     ensure  => present,
@@ -66,6 +66,7 @@ define continuum::buildagent::vhost(
       hasrestart => true,
       hasstatus => true,
       subscribe => Exec[continuum_buildagent_untar],
+      require => Package["java-1.6.0-openjdk-devel"],
   }
 }
 
