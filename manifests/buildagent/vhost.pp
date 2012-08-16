@@ -66,7 +66,7 @@ define continuum::buildagent::vhost(
       hasrestart => true,
       hasstatus => true,
       subscribe => Exec[continuum_buildagent_untar],
-      require => Package["java-1.6.0-openjdk-devel"],
+      require => Package["java"],
   }
 }
 
