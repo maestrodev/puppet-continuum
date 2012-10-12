@@ -3,6 +3,11 @@ require "#{File.join(File.dirname(__FILE__), '..', '..', 'spec_helper')}"
 describe "continuum::buildagent::vhost" do
   let(:node) { "buildagent" }
   let(:title) { "continuum-buildagent-02" }
+  let(:pre_condition) { %Q[                                                  
+    class { 'continuum::buildagent':
+      default_vhost => false,
+    }                                                                        
+  ] } 
 
   context "with defaults" do
     it { should contain_continuum__buildagent__vhost('continuum-buildagent-02') }
