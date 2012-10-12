@@ -38,6 +38,7 @@ class continuum::master(
     #bind_password => "",
     #admin_user => "root",
   },
+  $cookie_path = "",
   $continuum_jdbc = {
     databaseName => "/var/local/continuum/data/databases/continuum",
     dataSource => "org.apache.derby.jdbc.EmbeddedDataSource",

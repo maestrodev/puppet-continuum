@@ -178,4 +178,26 @@ describe 'continuum::master' do
       should contain_exec("continuum_jdbc_driver_append")
     end
   end
+
+  context "when cookie path is set" do
+    let(:params) { { :cookie_path => "/" } }
+
+    security_config_file="/var/local/continuum/conf/security.properties"
+    it "should set the cookie paths" do
+      should contain_file(security_config_file)
+      content = catalogue.resource('file', security_config_file).send(:parameters)[:content]
+      content.should =~ %r[security\.signon\.path=/]
+      content.should =~ %r[security\.rememberme\.path=/]
+    end
+  end
+
+  context "when cookie path is not set" do
+    security_config_file="/var/local/continuum/conf/security.properties"
+    it "should not set the cookie paths" do
+      should contain_file(security_config_file)
+      content = catalogue.resource('file', security_config_file).send(:parameters)[:content]
+      content.should_not =~ %r[security\.signon\.path]
+      content.should_not =~ %r[security\.rememberme\.path]
+    end
+  end
 end
