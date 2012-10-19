@@ -155,7 +155,7 @@ class continuum::master(
       command => "sed -i 's/derby.*$/${filename}/' ${installdir}/conf/wrapper.conf",
       unless => "grep '${filename}' ${installdir}/conf/wrapper.conf",
       notify => Service[$service],
-      require => File["$installbase/conf/wrapper.conf"],
+      before => File["$installbase/conf/wrapper.conf"],
     }
   }
   file { "$installbase":
