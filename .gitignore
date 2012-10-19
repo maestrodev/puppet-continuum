@@ -1,3 +1,4 @@
 /pkg
 /.vagrant
 /spec/fixtures/
+Gemfile.lock
