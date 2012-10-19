@@ -62,11 +62,6 @@ define continuum::buildagent::vhost(
       notify  => Service[$name],
     }
   } else {
-    file { "$installdir/conf/jetty.xml":
-      ensure  => present,
-      content => template("continuum/jetty8.xml.erb"),
-      notify  => Service[$name],
-    }
     file { "$installbase/contexts":
       ensure  => directory,
     }
