@@ -1,7 +1,5 @@
 require "#{File.join(File.dirname(__FILE__), '..', 'spec_helper')}"
 
-CONTINUUM_VERSION = "1.4.0"
-
 MAIL_FROM = {
     'name' => "Brett Porter",
     'address' => "brett@apache.org"
@@ -52,6 +50,23 @@ describe 'continuum::master' do
     it { should contain_file('/var/local/continuum/conf/shared.xml').with_source("/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/shared.xml") }
   end
 
+  context "when using jetty 8" do
+    let(:params) { {
+        :jetty_version => 8,
+    } }
+    it "should generate a valid jetty.xml" do
+      should_not contain_file('/var/local/continuum/conf/jetty.xml')
+      content = catalogue.resource('file', "/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/jetty.xml").send(:parameters)[:content]
+      content.should == IO.read(File.expand_path("expected-master-jetty-8.xml", File.dirname(__FILE__)))
+      content.should_not =~ %r[<Set name="forwarded">true</Set>]
+    end
+
+    it "should populate jetty context" do
+      content = catalogue.resource('file', '/var/local/continuum/contexts/continuum.xml').send(:parameters)[:content]
+      content.should == IO.read(File.expand_path("expected-master-context.xml", File.dirname(__FILE__)))
+    end
+  end
+
   context "when port changes" do
     let(:params) { {
         :port => "9999"
@@ -69,6 +84,28 @@ describe 'continuum::master' do
     it "should generate a valid security.properties file with right port" do
       content = catalogue.resource('file', '/var/local/continuum/conf/security.properties').send(:parameters)[:content]
       content.should =~ %r[application.url = http://localhost:9999/continuum]
+    end
+  end
+
+  context "when port changes on jetty 8" do
+    let(:params) { {
+        :port => "9999",
+        :jetty_version => 8,
+    } }
+    it "should generate a valid jetty.xml port" do
+      content = catalogue.resource('file', "/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/jetty.xml").send(:parameters)[:content]
+      content.should =~ /name="jetty.port" default="9999"/
+    end
+  end
+
+  context "when ssl forwarding on jetty 8" do
+    let(:params) { {
+        :forwarded => true,
+        :jetty_version => 8,
+    } }
+    it "should set forwarded" do
+      content = catalogue.resource('file', "/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/jetty.xml").send(:parameters)[:content]
+      content.should =~ %r[<Set name="forwarded">true</Set>]
     end
   end
 
@@ -179,6 +216,54 @@ describe 'continuum::master' do
     end
   end
 
+  context "with postgres jdbc settings" do
+    let(:params) {{
+      :continuum_jdbc => {
+        'databaseName' => 'continuum',
+        'dataSource'   => 'org.postgresql.ds.PGPoolingDataSource',
+        'username'     => 'continuum_u',
+        'password'     => 'continuum_p',
+      },
+      :users_jdbc => {
+        'databaseName' => 'users',
+        'dataSource'   => 'org.postgresql.ds.PGPoolingDataSource',
+        'username'     => 'continuum_u',
+        'password'     => 'continuum_p',
+      },
+    }}
+    it "should populate jetty jdbc settings" do
+      content = catalogue.resource('file', '/var/local/continuum/conf/jetty.xml').send(:parameters)[:content]
+      content.should == IO.read(File.expand_path("expected-master-postgres-jetty.xml", File.dirname(__FILE__)))
+    end
+  end
+
+  context "with postgres JDBC settings and Jetty 8" do
+    let(:params) {{
+      :jetty_version => 8,
+      :continuum_jdbc => {
+        'url'         => 'jdbc:postgres://localhost/continuum',
+        'driver'      => 'org.postgresql.Driver',
+        'username'    => 'continuum_u',
+        'password'    => 'continuum_p',
+      },
+      :users_jdbc => {
+        'url'         => 'jdbc:postgres://localhost/users',
+        'driver'      => 'org.postgresql.Driver',
+        'username'    => 'continuum_u',
+        'password'    => 'continuum_p',
+      },
+    }}
+
+    it "should populate jetty context" do
+      content = catalogue.resource('file', "/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/jetty.xml").send(:parameters)[:content]
+      content.should_not =~ %r[jdbc/continuum]
+      content.should_not =~ %r[jdbc/users]
+
+      content = catalogue.resource('file', '/var/local/continuum/contexts/continuum.xml').send(:parameters)[:content]
+      content.should == IO.read(File.expand_path("expected-master-postgres-context.xml", File.dirname(__FILE__)))
+    end
+  end
+
   context "when cookie path is set" do
     let(:params) { { :cookie_path => "/" } }
 
@@ -198,6 +283,55 @@ describe 'continuum::master' do
       content = catalogue.resource('file', security_config_file).send(:parameters)[:content]
       content.should_not =~ %r[security\.signon\.path]
       content.should_not =~ %r[security\.rememberme\.path]
+    end
+  end
+
+  context "when using 1.3.7" do
+    let(:params) {{ :version => "1.3.7" }}
+    it "should use jetty 6" do
+      should_not contain_file('/var/local/continuum/contexts')
+    end
+  end
+
+  context "when using 1.4.0" do
+    let(:params) {{ :version => "1.4.0" }}
+    it "should use jetty 6" do
+      should_not contain_file('/var/local/continuum/contexts')
+    end
+  end
+
+  context "when using 1.4.1-SNAPSHOT" do
+    let(:params) {{ :version => "1.4.1-SNAPSHOT" }}
+    it "should use jetty 6" do
+      should_not contain_file('/var/local/continuum/contexts')
+    end
+  end
+
+  context "when using 1.4.1" do
+    let(:params) {{ :version => "1.4.1" }}
+    it "should use jetty 8" do
+      should contain_file('/var/local/continuum/contexts')
+    end
+  end
+
+  context "when using 1.4.2-SNAPSHOT" do
+    let(:params) {{ :version => "1.4.2-SNAPSHOT" }}
+    it "should use jetty 8" do
+      should contain_file('/var/local/continuum/contexts')
+    end
+  end
+
+  context "when using 1.4.2" do
+    let(:params) {{ :version => "1.4.2" }}
+    it "should use jetty 8" do
+      should contain_file('/var/local/continuum/contexts')
+    end
+  end
+
+  context "when using 1.5.0" do
+    let(:params) {{ :version => "1.5.0" }}
+    it "should use jetty 8" do
+      should contain_file('/var/local/continuum/contexts')
     end
   end
 end

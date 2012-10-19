@@ -40,18 +40,24 @@ class continuum::master(
   },
   $cookie_path = "",
   $continuum_jdbc = {
+    url => "jdbc:derby:/var/local/continuum/data/databases/continuum;create=true",
+    driver => "org.apache.derby.jdbc.EmbeddedDriver",
     databaseName => "/var/local/continuum/data/databases/continuum",
     dataSource => "org.apache.derby.jdbc.EmbeddedDataSource",
-    username => "sa",
+    username => "SA",
     password => "",
   },
   $users_jdbc = {
+    url => "jdbc:derby:/var/local/continuum/data/databases/users;create=true",
+    driver => "org.apache.derby.jdbc.EmbeddedDriver",
     databaseName => "/var/local/continuum/data/databases/users",
     dataSource => "org.apache.derby.jdbc.EmbeddedDataSource",
-    username => "sa",
+    username => "SA",
     password => "",
   },
-  $jdbc_driver_url = ""
+  $jdbc_driver_url = "",
+  $jetty_version = undef,
+  $forwarded = false,
 ) inherits continuum::params {
 
   # wget from https://github.com/maestrodev/puppet-wget
@@ -62,6 +68,17 @@ class continuum::master(
 
   $installdir = "$installroot/apache-continuum-$version"
   $archive = "/usr/local/src/apache-continuum-${version}-bin.tar.gz"
+
+  if $jetty_version == undef {
+    if $version =~ /(1\.[1-3]\..*|1\.4\.0|1\.4\.1-)/ {
+      $jetty_version_real = 6
+    } else {
+      $jetty_version_real = 8
+    }
+  }
+  else {
+    $jetty_version_real = $jetty_version
+  }
 
   if $application_url == undef {
     $application_url_real = "http://localhost:${port}/continuum"
@@ -143,40 +160,69 @@ class continuum::master(
   }
   file { "$installbase":
     ensure => directory,
-  } ->
+  }
   file { "$installbase/tmp":
     ensure => directory,
-  } ->
+  }
   file { "$installbase/data":
     ensure => directory,
-  } ->
+  }
   file { "$installbase/logs":
     ensure => directory,
-  } ->
+  }
   file { "$installbase/conf":
     ensure => directory,
+  }
+  file { "$installbase/conf/wrapper.conf":
+    ensure => present,
+    source => "$installdir/conf/wrapper.conf",
     require => Exec["continuum_untar"],
-  } ->
-  file { "$installbase/conf/wrapper.conf": ensure => present, source => "$installdir/conf/wrapper.conf", } ->
-  file { "$installbase/conf/shared.xml": ensure  => present, source => "$installdir/conf/shared.xml", } ->
-  file { "$installbase/conf/jetty.xml":
-    ensure  => present,
-    content => template("continuum/jetty.xml.erb"),
     notify  => Service[$service],
-  } ->
+  }
+  file { "$installbase/conf/shared.xml":
+    ensure  => present,
+    source => "$installdir/conf/shared.xml",
+    require => Exec["continuum_untar"],
+    notify  => Service[$service],
+  }
   file { "$installbase/conf/security.properties":
     ensure  => present,
     content => template("continuum/security.properties.erb"),
     notify  => Service[$service],
-  } ->
+  }
   file { "$installdir/apps/continuum/WEB-INF/classes/META-INF/plexus/application.xml":
     content =>  template("continuum/application.xml.erb"),
+    require => Exec["continuum_untar"],
     notify  => Service[$service],
-  } ->
+  }
   file { "$installbase/conf/continuum.xml":
     content => template("continuum/continuum.xml.erb"),
     replace => no,
-  } ->
+    before  => Service[$service],
+  }
+
+  if $jetty_version_real == 6 {
+    file { "$installbase/conf/jetty.xml":
+      ensure  => present,
+      content => template("continuum/jetty6.xml.erb"),
+      notify  => Service[$service],
+    }
+  } else {
+    file { "$installdir/conf/jetty.xml":
+      ensure  => present,
+      content => template("continuum/jetty8.xml.erb"),
+      notify  => Service[$service],
+    }
+    file { "$installbase/contexts":
+      ensure  => directory,
+    }
+    file { "$installbase/contexts/continuum.xml":
+      ensure  => present,
+      content => template("continuum/contexts-continuum.xml.erb"),
+      notify  => Service[$service],
+    }
+  }
+
   file { "/etc/profile.d/continuum.sh":
     owner   => "root",
     mode    => "0755",

@@ -23,7 +23,8 @@ class continuum::buildagent(
   $installbase = "/var/local/continuum-buildagent",
   $download_mirror = $continuum::params::download_mirror,
   $download_maven_repo = $continuum::params::download_maven_repo,
-  $default_vhost = true
+  $default_vhost = true,
+  $jetty_version = undef,
 ) inherits continuum::params {
 
   # wget from https://github.com/maestrodev/puppet-wget
@@ -34,6 +35,17 @@ class continuum::buildagent(
 
   $installdir = "$installroot/apache-continuum-buildagent-$version"
   $archive = "/usr/local/src/apache-continuum-buildagent-${version}-bin.tar.gz"
+
+  if $jetty_version == undef {
+    if $version =~ /(1\.[1-3]\..*|1\.4\.0|1\.4\.1-)/ {
+      $jetty_version_real = 6
+    } else {
+      $jetty_version_real = 8
+    }
+  }
+  else {
+    $jetty_version_real = $jetty_version
+  }
 
   if $user_home == undef {
    $user_home_real = $installbase
@@ -95,9 +107,7 @@ class continuum::buildagent(
 
   if $default_vhost {
     continuum::buildagent::vhost { "continuum-buildagent":
-
-	require => File["$installroot/continuum-buildagent"], 
-
+      require => File["$installroot/continuum-buildagent"],
     }
   }
 

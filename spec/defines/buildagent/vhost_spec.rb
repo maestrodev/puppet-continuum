@@ -3,11 +3,11 @@ require "#{File.join(File.dirname(__FILE__), '..', '..', 'spec_helper')}"
 describe "continuum::buildagent::vhost" do
   let(:node) { "buildagent" }
   let(:title) { "continuum-buildagent-02" }
-  let(:pre_condition) { %Q[                                                  
+  let(:pre_condition) { %Q[
     class { 'continuum::buildagent':
       default_vhost => false,
-    }                                                                        
-  ] } 
+    }
+  ] }
 
   context "with defaults" do
     it { should contain_continuum__buildagent__vhost('continuum-buildagent-02') }
@@ -44,6 +44,20 @@ describe "continuum::buildagent::vhost" do
     it { should contain_file('/var/local/continuum-buildagent-02').with_owner("continuum") }
   end
 
+  context "with jetty 8" do
+    let(:pre_condition) { %Q[
+      class { 'continuum::buildagent':
+        default_vhost => false,
+        jetty_version => 8,
+      }
+    ] }
+
+    it { should_not contain_file('/var/local/continuum-buildagent-02/conf/jetty.xml') }
+    it { should contain_file('/var/local/continuum-buildagent-02/contexts/continuum-buildagent.xml') }
+    it { should contain_file('/var/local/continuum-buildagent-02/conf/wrapper.conf').with_source("/usr/local/apache-continuum-buildagent-#{CONTINUUM_VERSION}/conf/wrapper.conf") }
+    it { should_not contain_augeas('continuum-buildagent-02-set-jetty-port') }
+  end
+
   context "with a different port" do
     let(:params) { {
         :port => "9999"
@@ -53,6 +67,21 @@ describe "continuum::buildagent::vhost" do
       content = catalogue.resource('file', '/var/local/continuum-buildagent-02/conf/jetty.xml').send(:parameters)[:content]
       content.should =~ /name="jetty.port" default="9999"/
     end
+  end
+
+  context "with a different port and jetty 8" do
+    let(:pre_condition) { %Q[
+      class { 'continuum::buildagent':
+        default_vhost => false,
+        jetty_version => 8,
+      }
+    ] }
+    let(:params) { {
+        :port => "9999"
+    } }
+
+    it { should contain_file('/var/local/continuum-buildagent-02/conf/wrapper.conf').with_source("/usr/local/apache-continuum-buildagent-#{CONTINUUM_VERSION}/conf/wrapper.conf") }
+    it { should contain_augeas('continuum-buildagent-02-set-jetty-port').with_changes('set wrapper.app.parameter.6 -Djetty.port=9999') }
   end
 
   context "with a different master" do

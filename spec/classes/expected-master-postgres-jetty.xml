@@ -287,23 +287,10 @@
   <New id="continuum" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/continuum</Arg>
     <Arg>
-      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">/var/local/continuum/data/databases/continuum</Set>
-        <Set name="user">SA</Set>
-        <Set name="password"></Set>
-        <Set name="createDatabase">create</Set>
-      </New>
-    </Arg>
-  </New>
-
-  <New id="continuumShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/continuumShutdown</Arg>
-    <Arg>
-      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">/var/local/continuum/data/databases/continuum</Set>
-        <Set name="user">SA</Set>
-        <Set name="password"></Set>
-        <Set name="shutdownDatabase">shutdown</Set>
+      <New class="org.postgresql.ds.PGPoolingDataSource">
+        <Set name="DatabaseName">continuum</Set>
+        <Set name="user">continuum_u</Set>
+        <Set name="password">continuum_p</Set>
       </New>
     </Arg>
   </New>
@@ -313,23 +300,10 @@
   <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/users</Arg>
     <Arg>
-      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">/var/local/continuum/data/databases/users</Set>
-        <Set name="user">SA</Set>
-        <Set name="password"></Set>
-        <Set name="createDatabase">create</Set>
-      </New>
-    </Arg>
-  </New>
-
-  <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/usersShutdown</Arg>
-    <Arg>
-      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">/var/local/continuum/data/databases/users</Set>
-        <Set name="user">SA</Set>
-        <Set name="password"></Set>
-        <Set name="shutdownDatabase">shutdown</Set>
+      <New class="org.postgresql.ds.PGPoolingDataSource">
+        <Set name="DatabaseName">users</Set>
+        <Set name="user">continuum_u</Set>
+        <Set name="password">continuum_p</Set>
       </New>
     </Arg>
   </New>

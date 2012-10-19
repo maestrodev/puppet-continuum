@@ -1,7 +1,5 @@
 require "#{File.join(File.dirname(__FILE__), '..', 'spec_helper')}"
 
-CONTINUUM_VERSION="1.4.0"
-
 describe 'continuum::buildagent' do
   context "when defaults" do
     it { should contain_group('continuum') }
@@ -89,5 +87,54 @@ describe 'continuum::buildagent' do
     } }
 
     it { should_not contain_file("/var/local/continuum-buildagent") }
+  end
+
+  context "when using 1.3.7" do
+    let(:params) {{ :version => "1.3.7" }}
+    it "should use jetty 6" do
+      should_not contain_file('/var/local/continuum-buildagent/contexts')
+    end
+  end
+
+  context "when using 1.4.0" do
+    let(:params) {{ :version => "1.4.0" }}
+    it "should use jetty 6" do
+      should_not contain_file('/var/local/continuum-buildagent/contexts')
+    end
+  end
+
+  context "when using 1.4.1-SNAPSHOT" do
+    let(:params) {{ :version => "1.4.1-SNAPSHOT" }}
+    it "should use jetty 6" do
+      should_not contain_file('/var/local/continuum-buildagent/contexts')
+    end
+  end
+
+  context "when using 1.4.1" do
+    let(:params) {{ :version => "1.4.1" }}
+    it "should use jetty 8" do
+      should contain_file('/var/local/continuum-buildagent/contexts')
+    end
+  end
+
+  context "when using 1.4.2-SNAPSHOT" do
+    let(:params) {{ :version => "1.4.2-SNAPSHOT" }}
+    it "should use jetty 8" do
+      should contain_file('/var/local/continuum-buildagent/contexts')
+    end
+  end
+
+  context "when using 1.4.2" do
+    let(:params) {{ :version => "1.4.2" }}
+    it "should use jetty 8" do
+      should contain_file('/var/local/continuum-buildagent/contexts')
+    end
+  end
+
+  context "when using 1.5.0" do
+    let(:params) {{ :version => "1.5.0" }}
+    it "should use jetty 8" do
+      should contain_file('/var/local/continuum-buildagent/contexts')
+    end
   end
 end
