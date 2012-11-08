@@ -1,4 +1,5 @@
 class continuum::postgresql(
+  $user = 'continuum',
   $version = '90',
   $password,
   $db_password,
@@ -17,14 +18,8 @@ class continuum::postgresql(
     require => Package["postgresql${version}"],
   } ->
   postgres::hba { "host": allowedrules => $allowed_rules } ->
-  postgres::config { "host" :listen => "*" } ->
-  postgres::enable { "host": require => Postgres::Config["host"], } ->
-  postgres::user { "maestro": passwd => $db_password, } ->
-  postgres::createdb { "maestro":owner=> "maestro", require => Postgres::Createuser["maestro"], } ->
-  postgres::createdb { "luceedb":owner=> "maestro", require => Postgres::Createuser["maestro"], } ->
-  postgres::createdb { "users":owner=> "maestro", require => Postgres::Createuser["maestro"], } ->
-  postgres::createdb { "continuum":owner=> "maestro", require => Postgres::Createuser["maestro"], } ->
-  postgres::createdb { "archiva":owner=> "maestro", require => Postgres::Createuser["maestro"], } ->
-  postgres::createdb { "sonar":owner=> "maestro", require => Postgres::Createuser["maestro"], } 
-
+  postgres::config { "host": listen => "*" } ->
+  postgres::enable { "host": } ->
+  postgres::user { $user: passwd => $db_password, } ->
+  postgres::createdb { "continuum": owner=> $user }
 }
