@@ -1,25 +1,28 @@
 class continuum::postgresql(
   $user = 'continuum',
-  $version = '90',
+  $version = '9.0',
   $password,
   $db_password,
-  $allowed_rules,
-  $datadir) {
+  $allowed_rules) {
 
-  class { 'postgres' :
-    version  => $version,
-    password => $password,
-    datadir  => $datadir,
+  if $version != undef {
+    class { 'postgresql::version':
+      version => '9.0',
+    }
   }
 
-  postgres::user { "postgres": passwd => $password, }
-
-  postgres::initdb{ "host":
-    require => Package["postgresql${version}"],
-  } ->
-  postgres::hba { "host": allowedrules => $allowed_rules } ->
-  postgres::config { "host": listen => "*" } ->
-  postgres::enable { "host": } ->
-  postgres::user { $user: passwd => $db_password, } ->
-  postgres::createdb { "continuum": owner=> $user }
+  class { 'postgresql::server':
+    config_hash => {
+      'ip_mask_deny_postgres_user' => '0.0.0.0/32',
+      'ip_mask_allow_all_users'    => '0.0.0.0/0',
+      'listen_addresses'           => '*',
+      'manage_redhat_firewall'     => false,
+      'postgres_password'          => $password,
+      'ipv4acls'                   => $allowed_rules
+     },
+  }
+  postgresql::db{ 'continuum':
+    user => $user,
+    password => $db_password,
+  }  
 }
