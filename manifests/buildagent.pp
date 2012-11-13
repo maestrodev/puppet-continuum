@@ -111,9 +111,11 @@ class continuum::buildagent(
     }
   }
 
-  file { "/etc/facts.d":
-    ensure => directory,
-  } ->
+  if !defined(File["/etc/facts.d"]) {
+    file { "/etc/facts.d":
+      ensure => directory,
+    }
+  }
   file { "/etc/facts.d/continuum.json":
     content  => template("continuum/buildagent/continuum.json.erb"),
   }
