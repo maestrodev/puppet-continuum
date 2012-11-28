@@ -77,7 +77,7 @@ define continuum::buildagent::vhost(
       if !defined(File["/tmp/augeas"]) {
         file { "/tmp/augeas": ensure => directory }
       }
-      if !defined(File["/tmp/augeas"]) {
+      if !defined(File["/tmp/augeas/continuum"]) {
         file { "/tmp/augeas/continuum": ensure => directory } ->
         wget::fetch { "fetch-augeas-continuum":
           source => "https://raw.github.com/maestrodev/augeas/af585c7e29560306f23938b3ba15aa1104951f7f/lenses/properties.aug",
