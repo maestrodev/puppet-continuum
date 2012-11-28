@@ -62,6 +62,10 @@ define continuum::buildagent::vhost(
       notify  => Service[$name],
     }
   } else {
+    file { "$installbase/conf/jetty.xml":
+      ensure  => absent,
+      notify  => Service[$name],
+    }
     file { "$installbase/contexts":
       ensure  => directory,
     }
@@ -82,7 +86,6 @@ define continuum::buildagent::vhost(
         wget::fetch { "fetch-augeas-continuum":
           source => "https://raw.github.com/maestrodev/augeas/af585c7e29560306f23938b3ba15aa1104951f7f/lenses/properties.aug",
           destination => "/tmp/augeas/continuum/properties.aug",
-          before => Augeas["$name-set-jetty-port"],
         }
       }
 
@@ -92,7 +95,7 @@ define continuum::buildagent::vhost(
         incl => "$installbase/conf/wrapper.conf",
         changes => "set wrapper.app.parameter.6 -Djetty.port=$port",
         load_path => "/tmp/augeas/continuum",
-        require => File["${installbase}/conf/wrapper.conf"],
+        require => [File["${installbase}/conf/wrapper.conf"],File["/tmp/augeas/continuum/properties.aug"]],
       }
     }
   }

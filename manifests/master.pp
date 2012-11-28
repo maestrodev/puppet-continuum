@@ -208,6 +208,10 @@ class continuum::master(
       notify  => Service[$service],
     }
   } else {
+    file { "$installbase/conf/jetty.xml":
+      ensure  => absent,
+      notify  => Service[$service],
+    }
     file { "$installdir/conf/jetty.xml":
       ensure  => present,
       content => template("continuum/jetty8.xml.erb"),
