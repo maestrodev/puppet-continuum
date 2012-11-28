@@ -96,6 +96,7 @@ define continuum::buildagent::vhost(
         changes => "set wrapper.app.parameter.6 -Djetty.port=$port",
         load_path => "/tmp/augeas/continuum",
         require => [File["${installbase}/conf/wrapper.conf"],Wget::Fetch["fetch-augeas-continuum"]],
+        notify  => Service[$name],
       }
     }
   }
