@@ -55,7 +55,7 @@ describe 'continuum::master' do
         :jetty_version => 8,
     } }
     it "should generate a valid jetty.xml" do
-      should_not contain_file('/var/local/continuum/conf/jetty.xml')
+      should contain_file('/var/local/continuum/conf/jetty.xml').with_ensure('absent')
       content = catalogue.resource('file', "/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/jetty.xml").send(:parameters)[:content]
       content.should == IO.read(File.expand_path("expected-master-jetty-8.xml", File.dirname(__FILE__)))
       content.should_not =~ %r[<Set name="forwarded">true</Set>]

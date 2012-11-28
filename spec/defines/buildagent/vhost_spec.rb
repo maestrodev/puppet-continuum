@@ -52,7 +52,7 @@ describe "continuum::buildagent::vhost" do
       }
     ] }
 
-    it { should_not contain_file('/var/local/continuum-buildagent-02/conf/jetty.xml') }
+    it { should contain_file('/var/local/continuum-buildagent-02/conf/jetty.xml').with_ensure('absent') }
     it { should contain_file('/var/local/continuum-buildagent-02/contexts/continuum-buildagent.xml') }
     it { should contain_file('/var/local/continuum-buildagent-02/conf/wrapper.conf').with_source("/usr/local/apache-continuum-buildagent-#{CONTINUUM_VERSION}/conf/wrapper.conf") }
     it { should_not contain_augeas('continuum-buildagent-02-set-jetty-port') }
