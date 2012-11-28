@@ -77,18 +77,21 @@ define continuum::buildagent::vhost(
       if !defined(File["/tmp/augeas"]) {
         file { "/tmp/augeas": ensure => directory }
       }
-      file { "/tmp/augeas/continuum": ensure => directory } ->
-      wget::fetch { "fetch-augeas-continuum":
-        source => "https://raw.github.com/maestrodev/augeas/af585c7e29560306f23938b3ba15aa1104951f7f/lenses/properties.aug",
-        destination => "/tmp/augeas/continuum/properties.aug",
-      } ->
+      if !defined(File["/tmp/augeas"]) {
+        file { "/tmp/augeas/continuum": ensure => directory } ->
+        wget::fetch { "fetch-augeas-continuum":
+          source => "https://raw.github.com/maestrodev/augeas/af585c7e29560306f23938b3ba15aa1104951f7f/lenses/properties.aug",
+          destination => "/tmp/augeas/continuum/properties.aug",
+          before => Augeas["$name-set-jetty-poty"],
+        }
+      }
 
       # Adjust wrapper.conf
       augeas { "$name-set-jetty-port":
         lens => "Properties.lns",
         incl => "$installbase/conf/wrapper.conf",
         changes => "set wrapper.app.parameter.6 -Djetty.port=$port",
-        load_path => "/tmp/augeas/archiva",
+        load_path => "/tmp/augeas/continuum",
         require => File["${installbase}/conf/wrapper.conf"],
       }
     }
