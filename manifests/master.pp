@@ -66,7 +66,8 @@ class continuum::master(
   File { owner => $user, group => $group, mode => "0644" }
   Exec { path => "/bin" }
 
-  $installdir = "$installroot/apache-continuum-$version"
+  $baseversion = snapshotbaseversion($version)
+  $installdir = "$installroot/apache-continuum-$baseversion"
   $archive = "/usr/local/src/apache-continuum-${version}-bin.tar.gz"
 
   if $jetty_version == undef {
@@ -111,7 +112,7 @@ class continuum::master(
 
   if "x${download_maven_repo['url']}x" != "xx" {
     wget::authfetch { "continuum_download":
-      source => "${download_maven_repo['url']}/org/apache/continuum/continuum-jetty/$version/continuum-jetty-${version}-bin.tar.gz",
+      source => "${download_maven_repo['url']}/org/apache/continuum/continuum-jetty/$baseversion/continuum-jetty-${version}-bin.tar.gz",
       destination => $archive,
       user => $download_maven_repo['username'],
       password => $download_maven_repo['password'],

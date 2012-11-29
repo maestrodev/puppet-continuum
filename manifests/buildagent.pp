@@ -33,7 +33,8 @@ class continuum::buildagent(
   File { owner => $user, group => $group, mode => "0644" }
   Exec { path => "/bin" }
 
-  $installdir = "$installroot/apache-continuum-buildagent-$version"
+  $baseversion = snapshotbaseversion($version)
+  $installdir = "$installroot/apache-continuum-buildagent-$baseversion"
   $archive = "/usr/local/src/apache-continuum-buildagent-${version}-bin.tar.gz"
 
   if $jetty_version == undef {
@@ -72,7 +73,7 @@ class continuum::buildagent(
 
   if "x${download_maven_repo['url']}x" != "xx" {
     wget::authfetch { "continuum_buildagent_download":
-      source => "${download_maven_repo['url']}/org/apache/continuum/continuum-buildagent-jetty/$version/continuum-buildagent-jetty-${version}-bin.tar.gz",
+      source => "${download_maven_repo['url']}/org/apache/continuum/continuum-buildagent-jetty/$baseversion/continuum-buildagent-jetty-${version}-bin.tar.gz",
       destination => $archive,
       user => $download_maven_repo['username'],
       password => $download_maven_repo['password'],
