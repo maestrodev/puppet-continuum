@@ -84,7 +84,7 @@ define continuum::buildagent::vhost(
       if !defined(File["/tmp/augeas/continuum"]) {
         file { "/tmp/augeas/continuum": ensure => directory } ->
         file { "/tmp/augeas/continuum/properties.aug":
-          source => "puppet://modules/continuum/properties.aug"
+          source => "puppet:///modules/continuum/properties.aug"
         }
       }
 
