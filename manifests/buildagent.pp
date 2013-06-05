@@ -112,12 +112,21 @@ class continuum::buildagent(
     }
   }
 
-  if !defined(File["/etc/facts.d"]) {
-    file { "/etc/facts.d":
+  # Add a custom fact for the build agents, ensure the old location is deleted
+  if !defined(File["/etc/facter"]) {
+    file { "/etc/facter":
+      ensure => directory,
+    }
+  }
+  if !defined(File["/etc/facter/facts.d"]) {
+    file { "/etc/facter/facts.d":
       ensure => directory,
     }
   }
   file { "/etc/facts.d/continuum.json":
-    content  => template("continuum/buildagent/continuum.json.erb"),
+    ensure => absent
+  }
+  file { "/etc/facter/facts.d/continuum.json":
+    content => template("continuum/buildagent/continuum.json.erb"),
   }
 }
