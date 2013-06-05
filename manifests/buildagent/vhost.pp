@@ -111,7 +111,6 @@ define continuum::buildagent::vhost(
       hasrestart => true,
       hasstatus => true,
       subscribe => Exec[continuum_buildagent_untar],
-      require => Package["java"],
   }
 }
 
