@@ -3,21 +3,13 @@ class continuum::postgresql(
   $version = '9.0',
   $password,
   $db_password,
-  $allowed_rules) {
+  $allowed_rules,
+  $manage_package_repo = true) {
 
   if $version != undef {
-    yumrepo { 'postgresql-repo':
-      name     => "postgresql-${version}",
-      baseurl  => "http://yum.postgresql.org/${version}/redhat/rhel-\$releasever-\$basearch",
-      descr    => "Postgresql ${version} Yum Repo",
-      enabled  => 1,
-      gpgcheck => 0,
-      before => Class[postgresql::server],
-    }
     class { 'postgresql::params':
       version             => $version,
-      manage_package_repo => false,
-      package_source      => 'yum.postgresql.org',
+      manage_package_repo => $manage_package_repo,
       before              => Class['postgresql::server'],
     }
   }
