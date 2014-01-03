@@ -200,11 +200,11 @@
           </property>
           <property>
             <name>org.jpox.transactionIsolation</name>
-            <value><%= @tx_isolation %></value>
+            <value><%= @users_jdbc['tx_isolation'] || 'READ_COMMITTED' %></value>
           </property>
           <property>
             <name>org.jpox.poid.transactionIsolation</name>
-            <value><%= @tx_isolation %></value>
+            <value><%= @users_jdbc['tx_isolation'] || 'READ_COMMITTED' %></value>
           </property>
           <property>
             <name>org.jpox.rdbms.dateTimezone</name>
@@ -280,11 +280,11 @@
           </property>
           <property>
             <name>org.jpox.transactionIsolation</name>
-            <value><%= @tx_isolation %></value>
+            <value><%= @continuum_jdbc['tx_isolation'] || 'READ_COMMITTED' %></value>
           </property>
           <property>
             <name>org.jpox.poid.transactionIsolation</name>
-            <value><%= @tx_isolation %></value>
+            <value><%= @continuum_jdbc['tx_isolation'] || 'READ_COMMITTED' %></value>
           </property>
           <!-- this is required for some MySQL versions and configurations, see CONTINUUM-1113 -->
           <property>

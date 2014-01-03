@@ -338,11 +338,13 @@ describe 'continuum::master' do
 
   context "when changing transaction isolation" do
     let(:params) { {
-        :tx_isolation => "REPEATABLE_READ"
+        :users_jdbc => { 'tx_isolation' => "REPEATABLE_READ" },
+        :continuum_jdbc => { 'tx_isolation' => "REPEATABLE_READ" },
     } }
     it "should generate a valid application.xml file" do
       content = catalogue.resource('file', "/usr/local/apache-continuum-#{CONTINUUM_VERSION}/apps/continuum/WEB-INF/classes/META-INF/plexus/application.xml").send(:parameters)[:content]
       content.should =~ %r[REPEATABLE_READ]
+      content.should_not =~ %r[READ_COMMITTED]
     end
   end
 end
