@@ -44,6 +44,7 @@ describe 'continuum::master' do
       content = catalogue.resource('file', "/usr/local/apache-continuum-#{CONTINUUM_VERSION}/apps/continuum/WEB-INF/classes/META-INF/plexus/application.xml").send(:parameters)[:content]
       content.should =~ %r[<from-mailbox></from-mailbox>]
       content.should =~ %r[<from-name></from-name>]
+      content.should =~ %r[READ_COMMITTED]
     end
 
     it { should contain_file('/var/local/continuum/conf/wrapper.conf').with_source("/usr/local/apache-continuum-#{CONTINUUM_VERSION}/conf/wrapper.conf") }
@@ -332,6 +333,16 @@ describe 'continuum::master' do
     let(:params) {{ :version => "1.5.0" }}
     it "should use jetty 8" do
       should contain_file('/var/local/continuum/contexts')
+    end
+  end
+
+  context "when changing transaction isolation" do
+    let(:params) { {
+        :tx_isolation => "REPEATABLE_READ"
+    } }
+    it "should generate a valid application.xml file" do
+      content = catalogue.resource('file', "/usr/local/apache-continuum-#{CONTINUUM_VERSION}/apps/continuum/WEB-INF/classes/META-INF/plexus/application.xml").send(:parameters)[:content]
+      content.should =~ %r[REPEATABLE_READ]
     end
   end
 end

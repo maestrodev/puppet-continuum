@@ -29,6 +29,7 @@ class continuum::master(
     #name => "Apache Continuum",
     #address => "continuum@example.com",
   },
+  $tx_isolation = 'READ_COMMITTED',
   $ldap = {
     #hostname => "",
     #ssl => true,
